@@ -137,11 +137,14 @@
         .footer-link {
             text-align: center;
             margin-top: 20px;
-            font-size: 0.9rem;
+            font-size: 1.05rem;
             color: #64748b;
         }
-        .footer-link a { color: var(--primary); text-decoration: none; }
+        .footer-link a { color: var(--primary); text-decoration: none; cursor: pointer; font-weight: 600;}
         .footer-link a:hover { text-decoration: underline; }
+        
+        /* Ajuste de SweetAlert */
+        .swal2-html-container { margin: 1em 0; }
     </style>
 </head>
 <body>
@@ -149,10 +152,9 @@
     <div class="shape shape-1"></div>
     <div class="shape shape-2"></div>
 
-    <!-- VISTA PRINCIPAL (LADO CLIENTE/PACIENTE) -->
     <div class="glass-container">
         
-        <h1 th:text="${tituloPlataforma}">SynchroMed</h1>
+        <h1 th:text="*{tituloPlataforma}">SynchroMed</h1>
         <div class="subtitle">Portal de Pacientes - Autogestión de Salud</div>
 
         <div class="grid-dashboard">
@@ -165,7 +167,7 @@
         </div>
 
         <div class="footer-link">
-            ¿Eres personal de salud? <a href="#">Acceder al Portal del Hospital</a>
+            ¿Eres personal de salud? <a onclick="openModal('modal-login')">Acceder al Portal del Hospital</a>
         </div>
     </div>
 
@@ -174,7 +176,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal('modal-agenda')">&times;</span>
             <h2 style="margin-top:0">Reservar Cita / Consulta</h2>
-            <form onsubmit="submitFormularioCliente(event)">
+            <form id="frmAgenda" onsubmit="submitFormularioCliente(event)">
                 <label class="form-label">Nombres y Apellidos:</label>
                 <input type="text" name="nombres" required placeholder="Ej: Luis Garcia">
 
@@ -185,9 +187,26 @@
                 <input type="date" name="fechaNacimiento" required>
 
                 <label class="form-label">Detalle sus Síntomas Principales:</label>
-                <textarea name="sintomas" rows="4" required placeholder="Siento dolor en el pecho, fiebre, tos..."></textarea>
+                <textarea name="sintomas" rows="3" required placeholder="Siento dolor en el hueso..."></textarea>
 
                 <button type="submit" class="btn-submit">Enviar Solicitud a SynchroMed</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal LOGIN (Personal Salud) -->
+    <div id="modal-login" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('modal-login')">&times;</span>
+            <h2 style="margin-top:0; color:var(--primary)">Acceso - SynchroMed</h2>
+            <form id="frmLogin" onsubmit="submitLogin(event)">
+                <label class="form-label">Usuario:</label>
+                <input type="text" name="username" required placeholder="Ej: admin">
+
+                <label class="form-label">Contraseña:</label>
+                <input type="password" name="password" required placeholder="••••••••">
+
+                <button type="submit" class="btn-submit">Ingresar al Sistema</button>
             </form>
         </div>
     </div>
@@ -196,7 +215,6 @@
         function openModal(id) { document.getElementById(id).style.display = 'block'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Cerrar al hacer clic en el cristal (fuera de la caja)
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = "none";
@@ -213,27 +231,22 @@
             try {
                 const params = new URLSearchParams(new FormData(e.target));
                 const response = await fetch('/api/paciente/agendar', { method: 'POST', body: params });
-                const text = await response.text();
+                const htmlText = await response.text();
                 
-                let iconType = 'success';
-                let alertColor = '#3b82f6';
+                let iconType = 'info';
                 
                 // Efecto visual según gravedad de la inferencia del bot
-                if (text.includes('EMERGENCIA')) {
-                    iconType = 'error'; 
-                    alertColor = '#ef4444';
-                } else if (text.includes('TRAUMATOLOGÍA') || text.includes('INFECTOLOGÍA')) {
-                    iconType = 'warning';
-                    alertColor = '#f59e0b';
-                }
+                if (htmlText.includes('EMERGENCIA')) { iconType = 'error'; } 
+                else if (htmlText.includes('TRAUMATOLOGÍA') || htmlText.includes('INFECTOLOGÍA')) { iconType = 'warning'; }
 
                 Swal.fire({
                     title: 'Resultado del Agente:',
-                    text: text,
+                    html: htmlText, // Usamos renderizado HTML ordenado
                     icon: iconType,
                     background: '#1e293b', 
                     color: '#fff',
-                    confirmButtonColor: alertColor
+                    confirmButtonColor: '#3b82f6',
+                    width: '500px'
                 });
                 
                 closeModal('modal-agenda');
@@ -242,6 +255,42 @@
                 Swal.fire('Error', 'No se pudo contactar al servidor', 'error');
             } finally {
                 btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function submitLogin(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = 'Verificando Hash...';
+            btn.disabled = true;
+
+            try {
+                const params = new URLSearchParams(new FormData(e.target));
+                const response = await fetch('/api/hospital/login', { method: 'POST', body: params });
+                const text = await response.text();
+                
+                if (response.ok && text === "BIENVENIDO") {
+                    Swal.fire({
+                        title: 'Acceso Autorizado',
+                        text: 'Hash SHA-256 válido. Redirigiendo al dashboard del hospital...',
+                        icon: 'success',
+                        background: '#1e293b', color: '#fff', showConfirmButton: false, timer: 1500
+                    }).then(() => {
+                        window.location.href = '/hospital/dashboard';
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Acceso Denegado',
+                        text: text,
+                        icon: 'error',
+                        background: '#1e293b', color: '#fff'
+                    });
+                }
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo contactar al servidor de autenticación', 'error');
+            } finally {
+                btn.innerHTML = 'Ingresar al Sistema';
                 btn.disabled = false;
             }
         }

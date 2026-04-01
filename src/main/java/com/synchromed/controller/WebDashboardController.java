@@ -17,4 +17,10 @@ public class WebDashboardController {
         
         return "index";
     }
+
+    @GetMapping("/hospital/dashboard")
+    public String hospitalDashboard(Model model) {
+        model.addAttribute("usuarioActivo", "Administrador (Credencial verificada)");
+        return "hospital-dashboard";
+    }
 }

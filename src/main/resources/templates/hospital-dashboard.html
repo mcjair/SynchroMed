@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynchroMed - Dashboard de Personal de Salud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --sidebar-bg: #0f172a;
+            --main-bg: #1e293b;
+            --primary: #00d2ff;
+            --primary-hover: rgba(0, 210, 255, 0.2);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --card-bg: rgba(15, 23, 42, 0.6);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-light);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR (Menú Lateral Minimalista) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+            z-index: 50;
+        }
+
+        .sidebar-brand {
+            font-size: 1.8rem;
+            font-weight: 800;
+            padding: 0 24px;
+            margin-bottom: 40px;
+            background: -webkit-linear-gradient(45deg, var(--primary), #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-link {
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 1.05rem;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary-hover);
+            color: var(--text-light);
+            border-left-color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.3rem;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .sidebar-footer span { display: block; color: var(--primary); font-weight: 600; margin-bottom: 8px;}
+
+        /* MAIN CONTENT AREA */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, rgba(30, 58, 138, 0.4) 0%, transparent 40%);
+        }
+
+        .top-navbar {
+            height: 70px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+
+        .top-navbar h2 { margin: 0; font-size: 1.4rem; font-weight: 600;}
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+        .avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--primary); color: #000;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.1rem;
+        }
+
+        .dashboard-container {
+            padding: 40px;
+        }
+
+        .grid-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.2) }
+
+        .stat-icon {
+            width: 60px; height: 60px;
+            border-radius: 12px;
+            background: rgba(0, 210, 255, 0.1);
+            color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+        }
+
+        .stat-info h3 { margin: 0; font-size: 2rem; font-weight: 800; }
+        .stat-info p { margin: 4px 0 0; color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Vistas de Contenido */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .view-section.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 0;
+            color: var(--text-muted);
+        }
+        .empty-icon { font-size: 4rem; opacity: 0.5; margin-bottom: 20px;}
+        .empty-state h3 { color: var(--text-light); font-size: 1.5rem; margin-bottom: 10px;}
+
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-brand">SynchroMed+</div>
+
+        <!-- Módulos Generados -->
+        <a class="nav-link active" onclick="switchTab('dashboard', this)">
+            <span class="nav-icon">📊</span> Ventana Principal (Dashboard)
+        </a>
+        <a class="nav-link" onclick="switchTab('pre-triaje', this)">
+            <span class="nav-icon">🚨</span> Módulo Pre-Triaje
+        </a>
+        <a class="nav-link" onclick="switchTab('agenda', this)">
+            <span class="nav-icon">📅</span> Módulo Agenda
+        </a>
+        <a class="nav-link" onclick="switchTab('consulta', this)">
+            <span class="nav-icon">🩺</span> Módulo Consulta
+        </a>
+        <a class="nav-link" onclick="switchTab('seguimiento', this)">
+            <span class="nav-icon">📈</span> Módulo Seguimiento
+        </a>
+        <a class="nav-link" onclick="switchTab('turnos', this)">
+            <span class="nav-icon">⏱️</span> Módulo Turnos
+        </a>
+        <a class="nav-link" onclick="switchTab('admin', this)">
+            <span class="nav-icon">⚙️</span> Módulo Administrador
+        </a>
+
+        <div class="sidebar-footer">
+            <span th:text="${usuarioActivo}">Admin</span>
+            🟢 Sistema Seguro En Línea
+            <br><br><a href="/" style="color: #ef4444; text-decoration: none;">Cerrar Sesión</a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="top-navbar">
+            <h2 id="view-title">Ventana Principal (Dashboard)</h2>
+            <div class="user-profile">
+                <!-- Avatar generator -->
+                <div class="avatar">A</div>
+                Administrador
+            </div>
+        </div>
+
+        <div class="dashboard-container">
+
+            <!-- VISTA: DASHBOARD -->
+            <div id="view-dashboard" class="view-section active">
+                <div class="grid-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">🏥</div>
+                        <div class="stat-info">
+                            <h3>14</h3>
+                            <p>Pacientes en Espera (Pre-Triaje)</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3>28</h3>
+                            <p>Consultas Atendidas Hoy</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: #ef4444; background: rgba(239, 68, 68, 0.1);">🚨</div>
+                        <div class="stat-info">
+                            <h3 style="color: #ef4444;">2</h3>
+                            <p>Alertas Críticas Rojas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="margin-top: 20px;">
+                    <h3>Bienvenido al Panel Administrativo de SynchroMed</h3>
+                    <p style="color:var(--text-muted); margin-top: 10px;">
+                        Seleccione uno de los módulos en el menú lateral para gestionar los procesos hospitalarios.
+                    </p>
+                </div>
+            </div>
+
+            <!-- VISTA: PRE-TRIAJE -->
+            <div id="view-pre-triaje" class="view-section">
+                <div class="empty-state">
+                    <div class="empty-icon">🚨</div>
+                    <h3>Gestión de Pre-Triaje</h3>
+                    <p>Aquí se listarán los pacientes derivados por el Agente de NLP desde el portal cliente.</p>
+                </div>
+            </div>
+
+            <!-- VISTA: AGENDA -->
+            <div id="view-agenda" class="view-section">
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <h3>Calendario y Agendas</h3>
+                    <p>Gestión de disponibilidad médica evitando el Burnout (Capacidad 8 HRs).</p>
+                </div>
+            </div>
+
+            <!-- VISTA: CONSULTA -->
+            <div id="view-consulta" class="view-section">
+                <div class="empty-state">
+                    <div class="empty-icon">🩺</div>
+                    <h3>Consultorios En Vivo</h3>
+                    <p>Panel de historia clínica electrónica y prescripción.</p>
+                </div>
+            </div>
+
+            <!-- VISTA: SEGUIMIENTO -->
+            <div id="view-seguimiento" class="view-section">
+                <div class="empty-state">
+                    <div class="empty-icon">📈</div>
+                    <h3>Monitoreo Continuo</h3>
+                    <p>Trazabilidad del estado post-atención de pacientes críticos.</p>
+                </div>
+            </div>
+
+            <!-- VISTA: TURNOS -->
+            <div id="view-turnos" class="view-section">
+                <div class="empty-state">
+                    <div class="empty-icon">⏱️</div>
+                    <h3>Asignación de Turnos</h3>
+                    <p>Manejo de pantallas y llamadas en sala de espera.</p>
+                </div>
+            </div>
+
+            <!-- VISTA: ADMINISTRADOR -->
+            <div id="view-admin" class="view-section">
+                <div class="empty-state">
+                    <div class="empty-icon">⚙️</div>
+                    <h3>Configuración Avanzada</h3>
+                    <p>Manejo de roles, log de accesos de seguridad y consumo de inventario.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT TABS NAV -->
+    <script>
+        function switchTab(tabId, element) {
+            // Actualizar enlaces activos
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            // Actualizar Título
+            document.getElementById('view-title').innerText = element.innerText;
+
+            // Ocultar todas las secciones
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('view-' + tabId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
