@@ -3,95 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SynchroMed - Ecosistema Hospitalario</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Dashboard Clínico - SynchroMed Pro</title>
+    <!-- TIPOGRAFÍA PROFESIONAL: Fira Sans (Cuerpo) y Fira Code (Datos) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- ICONOS SVG PROFESIONALES (Lucide) en lugar de Emojis -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
-            --sidebar-bg: #0f172a;
-            --main-bg: #1e293b;
-            --primary: #00d2ff;
-            --primary-hover: rgba(0, 210, 255, 0.2);
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --card-bg: rgba(15, 23, 42, 0.6);
+            --bg-base: #F8FAFC;
+            --bg-sidebar: #FFFFFF;
+            --primary: #3B82F6; /* Azul sugerido por UI-UX-PRO-MAX */
+            --primary-light: #EFF6FF;
+            --secondary: #60A5FA;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+            --border-clr: rgba(0, 0, 0, 0.08);
+
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            --warning: #F59E0B;
+            --warning-bg: #FFFBEB;
+            --success: #10B981;
+            --success-bg: #ECFDF5;
+
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+        }
+
+        /* DARK MODE - Para un aspecto Clínico Premium Manual */
+        [data-theme="dark"] {
+            --bg-base: #0F172A;
+            --bg-sidebar: #1E293B;
+            --primary: #3B82F6;
+            --primary-light: rgba(59, 130, 246, 0.15);
+            --text-dark: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-clr: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
-            margin: 0; padding: 0; font-family: 'Outfit', sans-serif;
-            background-color: var(--main-bg); color: var(--text-light);
+            margin: 0; padding: 0; font-family: 'Fira Sans', sans-serif;
+            background-color: var(--bg-base); color: var(--text-dark);
             display: flex; height: 100vh; overflow: hidden;
+            background-image: radial-gradient(circle at 100% 0%, var(--primary-light) 0%, transparent 40%);
         }
 
-        /* SIDEBAR */
+        /* SIDEBAR PRO MAX */
         .sidebar {
-            width: 260px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column; padding: 20px 0; box-shadow: 4px 0 15px rgba(0,0,0,0.3); z-index: 50;
+            width: 280px; background-color: var(--glass-bg); backdrop-filter: blur(12px);
+            border-right: 1px solid var(--glass-border); display: flex; flex-direction: column;
+            padding: 24px 0; z-index: 50; box-shadow: 4px 0 24px rgba(0,0,0,0.02);
         }
         .sidebar-brand {
-            font-size: 1.8rem; font-weight: 800; padding: 0 24px; margin-bottom: 40px;
-            background: -webkit-linear-gradient(45deg, var(--primary), #3a7bd5);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 1.5rem; font-weight: 600; padding: 0 24px; margin-bottom: 32px;
+            display: flex; align-items: center; gap: 12px; color: var(--primary);
         }
+        
+        /* NAV LINKS */
         .nav-link {
-            padding: 16px 24px; display: flex; align-items: center; gap: 12px;
-            color: var(--text-muted); font-weight: 600; cursor: pointer; border-left: 4px solid transparent; transition: 0.3s;
+            padding: 14px 24px; display: flex; align-items: center; gap: 14px;
+            color: var(--text-muted); font-weight: 500; cursor: pointer; border-left: 3px solid transparent;
+            transition: all 0.2s ease;
         }
-        .nav-link:hover, .nav-link.active {
-            background-color: var(--primary-hover); color: var(--text-light); border-left-color: var(--primary);
+        .nav-link:hover {
+            background-color: var(--primary-light); color: var(--primary);
         }
-        .nav-icon { font-size: 1.3rem; }
+        .nav-link.active {
+            background-color: var(--primary-light); color: var(--primary); border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
         .sidebar-footer {
-            margin-top: auto; padding: 20px 24px; border-top: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-muted);
+            margin-top: auto; padding: 24px; border-top: 1px solid var(--border-clr); font-size: 0.9rem;
         }
 
         /* MAIN CONTENT AREA */
         .main-content {
             flex: 1; display: flex; flex-direction: column; overflow-y: auto;
-            background: radial-gradient(circle at top right, rgba(30, 58, 138, 0.4) 0%, transparent 40%);
         }
-        .top-navbar {
-            height: 70px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 40;
-        }
-        .dashboard-container { padding: 40px; padding-bottom: 80px;}
-
-        /* UTILS VISUALES (Tablas, Badges, Botones, Inputs) */
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
         
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: rgba(0,0,0,0.3); padding: 15px; font-weight: 600; color: var(--text-muted); }
-        td { padding: 15px; border-top: 1px solid var(--border-color); vertical-align: middle; }
-        tr:hover { background: rgba(255,255,255,0.03); }
+        .top-navbar {
+            height: 72px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center;
+            justify-content: space-between; padding: 0 40px; background: var(--glass-bg); backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 40; box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .top-navbar h2 { margin: 0; font-size: 1.25rem; font-weight: 600; }
 
-        .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
-        .badge.critico { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; } /* ROJO / ALERTA */
-        .badge.urgente { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
-        .badge.moderado { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid #3b82f6; }
-        .badge.leve { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+        .dashboard-container { padding: 40px; max-width: 1440px; margin: 0 auto; width: 100%; box-sizing: border-box;}
 
-        .btn { padding: 10px 18px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-family: 'Outfit'; transition: 0.2s; }
-        .btn-primary { background: linear-gradient(45deg, var(--primary), #3a7bd5); color: #000; }
-        .btn-primary:active { opacity:0.8; }
+        /* UTILS VISUALES (Glassmorphism & Professionalism) */
+        .card { 
+            background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;}
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px;}
+        
+        .stat-value { font-family: 'Fira Code', monospace; font-size: 2.5rem; font-weight: 600; line-height: 1; margin-bottom: 8px;}
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; font-weight: 500;}
+
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
+        th { padding: 16px; font-weight: 500; color: var(--text-muted); border-bottom: 2px solid var(--border-clr); }
+        td { padding: 16px; border-bottom: 1px solid var(--border-clr); vertical-align: middle; }
+        tr:hover { background-color: var(--primary-light); }
+
+        .badge { padding: 6px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .badge.critico { background: var(--danger-bg); color: var(--danger); }
+        .badge.urgente { background: var(--warning-bg); color: var(--warning); }
+        .badge.moderado { background: var(--primary-light); color: var(--primary); }
+        .badge.leve { background: var(--success-bg); color: var(--success); }
+
+        .btn { 
+            padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500;
+            font-family: inherit; font-size: 0.9rem; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+        }
+        .btn-primary { background: var(--primary); color: #FFF; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .btn-primary:active { transform: translateY(1px); }
         .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
-        .btn-outline:hover { background: rgba(0,210,255,0.1); }
-        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+        .btn-outline:hover { background: var(--primary-light); }
+        .btn-danger { background: var(--danger); color: #FFF; }
+        
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         input, select, textarea {
-            width: 100%; box-sizing: border-box; padding: 12px; margin-top: 8px; margin-bottom: 16px;
-            border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff;
-            font-family: inherit; font-size: 0.95rem;
+            width: 100%; box-sizing: border-box; padding: 12px 16px; margin-top: 8px; margin-bottom: 16px;
+            border-radius: 8px; border: 1px solid var(--border-clr); background: transparent; color: inherit;
+            font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s;
         }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
 
-        .view-section { display: none; animation: fadeIn 0.4s ease-out; }
+        .view-section { display: none; animation: fadeIn 0.3s ease-out; }
         .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         
-        .section-header { margin-top: 0; margin-bottom: 5px; font-size: 1.5rem; color: #fff;}
-        .section-desc { color: var(--text-muted); margin-bottom: 24px; font-size: 0.95rem; }
+        .section-header { margin-top: 0; margin-bottom: 8px; font-size: 1.5rem; font-weight: 600;}
+        .section-desc { color: var(--text-muted); margin-bottom: 32px; font-size: 1rem; max-width: 800px; line-height: 1.5; }
 
     </style>
 </head>
@@ -99,40 +148,57 @@
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-        <div class="sidebar-brand">SynchroMed+</div>
+        <div class="sidebar-brand">
+            <i data-lucide="activity" style="color: var(--primary);" width="28" height="28"></i>
+            SynchroMed Pro
+        </div>
 
         <a class="nav-link active" onclick="switchTab('dashboard', this)">
-            <span class="nav-icon">📊</span> Panel Central
+            <i data-lucide="layout-dashboard" width="20"></i> Panel Central
         </a>
         <a class="nav-link" onclick="switchTab('pre-triaje', this)">
-            <span class="nav-icon">🚨</span> Módulo Pre-Triaje
+            <i data-lucide="stethoscope" width="20"></i> Triaje Digital
         </a>
         <a class="nav-link" onclick="switchTab('agenda', this)">
-            <span class="nav-icon">📅</span> Módulo Agenda
+            <i data-lucide="calendar-check" width="20"></i> Agenda Médica
         </a>
         <a class="nav-link" onclick="switchTab('consulta', this)">
-            <span class="nav-icon">🩺</span> Módulo Consulta
+            <i data-lucide="clipboard-list" width="20"></i> Consulta Clínica
         </a>
         <a class="nav-link" onclick="switchTab('seguimiento', this)">
-            <span class="nav-icon">📈</span> Seguimiento Post
+            <i data-lucide="line-chart" width="20"></i> Seguimiento
         </a>
         <a class="nav-link" onclick="switchTab('turnos', this)">
-            <span class="nav-icon">⏱️</span> Gestión Turnos
+            <i data-lucide="clock" width="20"></i> Gestión de Turnos
         </a>
         <a class="nav-link" onclick="switchTab('admin', this)">
-            <span class="nav-icon">⚙️</span> Config. Sistema
+            <i data-lucide="settings" width="20"></i> Configuración
+        </a>
+        <a class="nav-link" onclick="toggleTheme()" id="themeToggleBtn" style="margin-top: 20px;">
+            <i data-lucide="moon" width="20"></i> Modo Oscuro
         </a>
 
         <div class="sidebar-footer">
-            <span th:text="${usuarioActivo}">Administrador</span>
-            <div style="margin-top:10px;"><a href="/" style="color: #ef4444; text-decoration: none;">Cerrar Sesión Segura</a></div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <div style="width:36px; height:36px; border-radius:50%; background:var(--primary-light); display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:600;">Ad</div>
+                <div>
+                    <div style="font-weight: 500;" th:text="${usuarioActivo}">Administrador</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">En línea</div>
+                </div>
+            </div>
+            <a href="/" style="color: var(--danger); text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 500;">
+                <i data-lucide="log-out" width="16"></i> Cerrar Sesión
+            </a>
         </div>
     </div>
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
         <div class="top-navbar">
-            <h2 id="view-title">Ventana Principal (Dashboard)</h2>
+            <h2 id="view-title">Panel Central</h2>
+            <div style="display:flex; gap: 16px;">
+                <button class="btn btn-outline" style="padding: 8px; border:none;"><i data-lucide="bell" width="20"></i></button>
+            </div>
         </div>
 
         <div class="dashboard-container">
@@ -140,217 +206,299 @@
             <!-- VISTA: DASHBOARD -->
             <div id="view-dashboard" class="view-section active">
                 <div class="grid-3">
-                    <div class="card" style="border-left: 4px solid var(--primary);">
-                        <h3 style="margin:0; font-size: 2rem;">14</h3>
-                        <p style="color: var(--text-muted); margin-top:5px;">Pacientes en Espera de Pre-Triaje</p>
+                    <div class="card" style="border-top: 4px solid var(--primary);">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <div class="stat-value text-primary">14</div>
+                                <div class="stat-label">Pacientes en Triaje</div>
+                            </div>
+                            <div style="padding:10px; background:var(--primary-light); border-radius:12px; color:var(--primary);"><i data-lucide="users"></i></div>
+                        </div>
                     </div>
-                    <div class="card" style="border-left: 4px solid #10b981;">
-                        <h3 style="margin:0; font-size: 2rem;">28</h3>
-                        <p style="color: var(--text-muted); margin-top:5px;">Consultas Finalizadas Hoy</p>
+                    <div class="card" style="border-top: 4px solid var(--success);">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <div class="stat-value">28</div>
+                                <div class="stat-label">Consultas Finalizadas Hoy</div>
+                            </div>
+                            <div style="padding:10px; background:var(--success-bg); border-radius:12px; color:var(--success);"><i data-lucide="check-circle-2"></i></div>
+                        </div>
                     </div>
-                    <div class="card" style="border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05);">
-                        <h3 style="margin:0; font-size: 2rem; color: #ef4444;">2</h3>
-                        <p style="color: var(--text-muted); margin-top:5px;">Médicos Cerca del Nivel de Burnout</p>
+                    <div class="card" style="border-top: 4px solid var(--danger);">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <div class="stat-value" style="color: var(--danger);">2</div>
+                                <div class="stat-label">Alertas Críticas Activas</div>
+                            </div>
+                            <div style="padding:10px; background:var(--danger-bg); border-radius:12px; color:var(--danger);"><i data-lucide="alert-triangle"></i></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA: PRE-TRIAJE DIGITAL (Stakeholder: Personal de Triaje) -->
+            <!-- VISTA: PRE-TRIAJE -->
             <div id="view-pre-triaje" class="view-section">
-                <h2 class="section-header">Gestión de Pre-Triaje (RF-01 a RF-05)</h2>
-                <p class="section-desc">Visualice y gestione a los pacientes derivados desde el portal web en tiempo real, ordenados estrictamente por nivel de urgencia analizado por el Agente.</p>
+                <h2 class="section-header">Cola de Pre-Triaje Digital</h2>
+                <p class="section-desc">Pizarra de derivación de pacientes ordenados algorítmicamente y en tiempo real. Evaluación cruzada con historial preventivo (RF-04).</p>
                 
-                <div class="card" style="padding:0;">
+                <div class="card" style="padding:0; overflow:hidden;">
                     <table>
                         <thead>
                             <tr>
-                                <th>Prioridad Algorítmica</th>
-                                <th>Paciente & Fecha Reg.</th>
-                                <th>Síntomas Declarados (Cruzar Historial)</th>
+                                <th>Prioridad</th>
+                                <th>Paciente / DNI</th>
+                                <th>Síntomas Declarados y Cruce de Historial</th>
                                 <th>Acción Inmediata</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><span class="badge critico">▲ CRÍTICO (Inmediato)</span></td>
-                                <td><b>Manuel Rojas Paredes</b><br><span style="color:#94a3b8;font-size:0.85em;">DNI: 12345670</span></td>
-                                <td>"Dolor punzante profundo en el pecho y brazo izquierdo, falta de aire"<br><span style="color:#ef4444; font-size: 0.85em;">⚠️ Historial indica hipertensión</span></td>
-                                <td><button class="btn btn-danger" onclick="Swal.fire('Derivación Directa', 'Paciente Manuel derivado a Tópico de Shock Trauma Inmediatamente.', 'error')">Derivar a Tópico</button></td>
+                                <td><span class="badge critico"><i data-lucide="alert-circle" width="14"></i> Nivel Crítico (1)</span></td>
+                                <td><span style="font-weight:600;">Manuel Rojas Paredes</span><br><span style="color:var(--text-muted);font-size:0.85rem;font-family:'Fira Code', monospace;">DOC-12345670</span></td>
+                                <td>
+                                    Dolor punzante profundo en el pecho, falta de aire.<br>
+                                    <span style="color:var(--danger); font-size:0.85rem; display:flex; gap:4px; align-items:center; margin-top:4px;"><i data-lucide="shield-alert" width="14"></i> Riesgo Cardiovascular: Paciente hipertenso (Cruce Historia)</span>
+                                </td>
+                                <td><button class="btn btn-danger" onclick="Swal.fire('Traslado', 'Derivación directa a Shock Trauma iniciada', 'error')">Pase Directo a Trauma</button></td>
                             </tr>
                             <tr>
-                                <td><span class="badge urgente">● URGENTE (Prioritario)</span></td>
-                                <td><b>Lucia Fernandez</b><br><span style="color:#94a3b8;font-size:0.85em;">DNI: 76543120</span></td>
-                                <td>"Fiebre de 39.8°C y escalosfrios fuertes desde ayer"<br><span style="color:#10b981; font-size: 0.85em;">Historial limpio</span></td>
-                                <td><button class="btn btn-outline">Procesar Ingreso</button></td>
+                                <td><span class="badge urgente"><i data-lucide="clock" width="14"></i> Nivel Urgente (2)</span></td>
+                                <td><span style="font-weight:600;">Lucia Fernandez</span><br><span style="color:var(--text-muted);font-size:0.85rem;font-family:'Fira Code', monospace;">DOC-76543120</span></td>
+                                <td>
+                                    Fiebre 39.8°C y escalofríos severos.<br>
+                                    <span style="color:var(--success); font-size:0.85rem; display:flex; gap:4px; align-items:center; margin-top:4px;"><i data-lucide="shield-check" width="14"></i> Historial Limpio</span>
+                                </td>
+                                <td><button class="btn btn-outline" style="width:100%;">Ingresar por Tópico</button></td>
                             </tr>
                             <tr>
-                                <td><span class="badge moderado">▼ MODERADO</span></td>
-                                <td><b>Javier Poma Silva</b><br><span style="color:#94a3b8;font-size:0.85em;">DNI: 09876541</span></td>
-                                <td>"Dolor muscular en la espalda al agacharse"</td>
-                                <td><button class="btn btn-outline">Asignar Espera (40m)</button></td>
+                                <td><span class="badge moderado"><i data-lucide="minus" width="14"></i> Nivel Moderado (3)</span></td>
+                                <td><span style="font-weight:600;">Javier Poma Silva</span><br><span style="color:var(--text-muted);font-size:0.85rem;font-family:'Fira Code', monospace;">DOC-09876541</span></td>
+                                <td>Dolor muscular leve en la espalda al agacharse.</td>
+                                <td><button class="btn btn-outline" style="width:100%;">Asignar Espera (40m)</button></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- VISTA: AGENDA INTELIGENTE (Stakeholder: Administrativo) -->
+            <!-- VISTA: AGENDA E INVENTARIO -->
             <div id="view-agenda" class="view-section">
-                <h2 class="section-header">Agenda e Inventario Físico (RF-06 a RF-10)</h2>
-                <p class="section-desc">Coordinación de recursos hospitalarios: Salas, Médicos habilitados y Estado del equipamiento biomédico.</p>
+                <h2 class="section-header">Agenda Inteligente y Disponibilidad Operativa</h2>
+                <p class="section-desc">Asignación de citas condicionada. El sistema bloquea horarios de médicos si hay cobertura de emergencias e informa la integridad de los equipos médicos biomédicos (RF-06 a RF-10).</p>
                 
                 <div class="grid-2">
                     <div class="card">
-                        <h3>Agendar Cita Condicionada (RF-06)</h3>
-                        <label>Médico Especialista:</label>
+                        <div style="display:flex; gap:12px; align-items:center; margin-bottom: 24px;">
+                            <div style="padding:10px; background:var(--primary-light); border-radius:12px; color:var(--primary);"><i data-lucide="calendar"></i></div>
+                            <h3 style="margin:0; font-weight:600;">Motor de Citas Estricto</h3>
+                        </div>
+                        
+                        <label style="font-weight:500; font-size:0.9rem;">Especialista Clínico:</label>
                         <select>
                             <option>Dr. Pedro Alva (Traumatología) - DISPONIBLE</option>
-                            <option disabled>Dra. Elena Ruiz (Med. General) - BLOQUEADO POR URGENCIA (RF-08)</option>
+                            <option disabled>Dra. Elena Ruiz (Med. General) - ⓧ BLOQUEADO (Cubriendo Urgencias)</option>
                         </select>
-                        <label>Sala e Insumos:</label>
+                        <label style="font-weight:500; font-size:0.9rem;">Sala y Equipo:</label>
                         <select>
-                            <option>Consultorio 12 - Rayos X Operativo</option>
-                            <option disabled>Quirófano A - En Mantenimiento</option>
+                            <option>Consultorio 12 - Rayos X (Operativo)</option>
+                            <option disabled>Quirófano A - ⓧ INTERVENIDO (Mantenimiento Bioclínico)</option>
                         </select>
-                        <button class="btn btn-primary" onclick="Swal.fire('Cita Guardada', 'Se ha reservado la cita y notificado al paciente (RF-09)', 'success')">Bloquear Horario Interconectado</button>
+                        <button class="btn btn-primary" style="width:100%; margin-top:16px;" onclick="Swal.fire('Agendado', 'El sistema ha cruzado validaciones de disponibilidad con éxito y se notificó al paciente.', 'success')">
+                            <i data-lucide="check-square" width="18"></i> Reservar y Bloquear Agenda
+                        </button>
                     </div>
 
                     <div class="card">
-                        <h3>Inventario de Equipos Médicos (RF-07)</h3>
+                        <div style="display:flex; gap:12px; align-items:center; margin-bottom: 24px;">
+                            <div style="padding:10px; background:var(--bg-sidebar); border-radius:12px; color:var(--text-muted); border: 1px solid var(--border-clr)"><i data-lucide="package"></i></div>
+                            <h3 style="margin:0; font-weight:600;">Inventario de Red</h3>
+                        </div>
                         <table>
-                            <tr><th>Equipo Físico</th><th>Estado Real</th></tr>
+                            <tr><th style="padding-top:0;">Equipo / Sala</th><th style="padding-top:0;">Estado del Activo</th></tr>
                             <tr><td>Ecógrafo 3D (Sala 2)</td><td><span class="badge leve">Operativo</span></td></tr>
-                            <tr><td>Monitor de Signos Vitales</td><td><span class="badge urgente">En Mantenimiento Calibración</span></td></tr>
-                            <tr><td>Desfibrilador P1</td><td><span class="badge critico">Averiado - Reportar</span></td></tr>
+                            <tr><td>Tensiométro Dinámico</td><td><span class="badge urgente">Calibración</span></td></tr>
+                            <tr><td>Desfibrilador (Pabellón 1)</td><td><span class="badge critico">Falla Crítica Reportada</span></td></tr>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA: CONSULTA CLÍNICA (Stakeholder: Médico Especialista) -->
+            <!-- VISTA: CONSULTA CLÍNICA -->
             <div id="view-consulta" class="view-section">
-                <h2 class="section-header">Portal Médico / Consulta Efectiva (RF-11 a RF-15)</h2>
-                <p class="section-desc">Toda la historia del paciente, diagnóstico y recetas integradas en una sola pantalla unificada para operar ágilmente (RF-12).</p>
+                <h2 class="section-header">Estación del Especialista: Consulta Unificada</h2>
+                <p class="section-desc">Módulo enfocado al médico para expedición electrónica rápida. Verifique historiales y genere prescripciones sin transiciones evitando mala praxis farmacológica.</p>
                 
                 <div class="grid-2">
-                    <!-- Columna Izquierda: Historial -->
+                    <!-- Historial Centralizado -->
                     <div class="card">
-                        <h3>Historial de: Lucia Fernandez (RF-11)</h3>
-                        <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 12px; margin-bottom: 20px;">
-                            <strong style="color: #ef4444;">ALERTA DE ALERGIA REGISTRADA:</strong><br>
-                            Paciente presenta anafilaxia a la <b>Penicilina</b>. (RF-13)
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom: 20px;">
+                            <i data-lucide="file-text" style="color: var(--primary);"></i>
+                            <h3 style="margin:0; font-size: 1.1rem; font-weight: 600;">Resumen Expediente M-76543120</h3>
                         </div>
-                        <p><b>Visitas Previas:</b></p>
-                        <ul style="color: var(--text-muted); line-height: 1.6;">
-                            <li>10 Ene: Chequeo General (Sano)</li>
-                            <li>04 Mar: Cuadro Viral (Tratado con Paracetamol)</li>
-                        </ul>
+                        
+                        <div style="background: var(--danger-bg); border-left: 4px solid var(--danger); padding: 16px; border-radius:0 8px 8px 0; margin-bottom: 24px;">
+                            <div style="color: var(--danger); font-weight: 600; font-size: 0.9rem; display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                                <i data-lucide="shield-alert" width="16"></i> ALERTA MÉDICA (RF-13)
+                            </div>
+                            <div style="font-size: 0.9rem; color: #7F1D1D;">Paciente declara alergia anafiláctica severa comprobada a medicamentos derivados de la familia de <b>Penicilinas</b>. Riesgo de shock alto.</div>
+                        </div>
+
+                        <div style="font-weight:500; font-size:0.95rem; margin-bottom:12px;">Historial de Asistencia:</div>
+                        <div style="border-left: 2px solid var(--border-clr); padding-left: 16px; margin-left: 8px;">
+                            <div style="margin-bottom:16px;">
+                                <div style="font-size:0.85rem; color:var(--text-muted); font-family: 'Fira Code', monospace;">10 ENE 2026</div>
+                                <div style="font-size:0.95rem;">Controles Generales Preventivos (Alta en 2h)</div>
+                            </div>
+                            <div>
+                                <div style="font-size:0.85rem; color:var(--text-muted); font-family: 'Fira Code', monospace;">04 MAR 2026</div>
+                                <div style="font-size:0.95rem;">Rinofaringitis aguda (Prescripción: Paracetamol)</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Columna Derecha: Acciones Médico -->
+                    <!-- Recetario Digital -->
                     <div class="card">
-                        <h3>Emitir Diagnóstico y Receta</h3>
-                        <label>Redactar Diagnóstico:</label>
-                        <textarea rows="3" placeholder="Paciente presenta faringitis aguda..."></textarea>
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom: 24px;">
+                            <i data-lucide="edit-3" style="color: var(--primary);"></i>
+                            <h3 style="margin:0; font-size: 1.1rem; font-weight: 600;">Diagnóstico & Prescripción Digital (RF-12)</h3>
+                        </div>
                         
-                        <label>Medicamento a Recetar:</label>
-                        <select onchange="if(this.value==='penicilina') Swal.fire('CONTRAINDICACIÓN', 'El sistema detecta una alergia grave cruzada (RF-13). Elija una Ampicilina o alternativa.', 'error')">
-                            <option value="">Seleccione Farmaco...</option>
-                            <option value="paracetamol">Paracetamol 500mg</option>
-                            <option value="penicilina">Dosis de Penicilina Inyectable</option>
+                        <label style="font-weight:500; font-size:0.9rem;">ICD/Reporte Clínico:</label>
+                        <textarea rows="3" placeholder="Detalle los hallazgos de la examinación física e indicaciones complementarias."></textarea>
+                        
+                        <label style="font-weight:500; font-size:0.9rem;">Selección Terapéutica Validada:</label>
+                        <select onchange="if(this.value==='penicilina') Swal.fire({title: 'Bloqueo de Seguridad Farmacológica', text: 'Prescripción Denegada. El paciente es alérgico a la Penicilina en grado Anafiláctico (Protocolo Inteligente RF-13)', icon: 'error', confirmButtonColor: '#EF4444'})">
+                            <option value="">Buscar en Vademécum Digital...</option>
+                            <option value="paracetamol">Paracetamol 500mg (Tab)</option>
+                            <option value="penicilina">Penicilina G Benzatínica 1.2M UI</option>
                         </select>
 
-                        <div style="display:flex; gap:10px; margin-top:20px;">
-                            <button class="btn btn-primary" onclick="Swal.fire('Procesado', 'Receta Emitida Digitalmente y guardada en historial (RF-14)', 'success')">Autogenerar Receta</button>
-                            <button class="btn btn-outline" onclick="Swal.fire('Derivación', 'Generando pase a Neumología (RF-15)', 'info')">Derivar (RF-15)</button>
+                        <div style="display:flex; gap:12px; margin-top:8px;">
+                            <button class="btn btn-primary" onclick="Swal.fire('Transacción Inmutable Guardada', 'Se emitió de forma segura la receta digital. Generada en Historial (RF-14).', 'success')" style="flex:1;">
+                                <i data-lucide="printer" width="18"></i> Emitir Receta Digital
+                            </button>
+                            <button class="btn btn-outline" style="flex:1;">
+                                <i data-lucide="forward" width="18"></i> Derivación Externa
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA: SEGUIMIENTO POST-CONSULTA (Stakeholders: Web/Médico) -->
+            <!-- VISTA: SEGUIMIENTO POST-CONSULTA -->
             <div id="view-seguimiento" class="view-section">
-                <h2 class="section-header">Seguimiento Post-Consulta (RF-16 a RF-20)</h2>
+                <h2 class="section-header">Monitoreo de Continuidad de Tratamiento</h2>
                 <div class="card">
-                    <h3>Pacientes en Control Domiciliario Automatizado</h3>
+                    <p class="section-desc" style="margin-bottom: 24px;">Visualización analítica de todos los pacientes en planes domiciliarios, verificando respuesta de recordatorios. (RF-16 a RF-20)</p>
                     <table>
-                        <tr>
-                            <th>Paciente</th>
-                            <th>Plan Generado Automático (RF-16)</th>
-                            <th>Recordatorios (RF-18)</th>
-                            <th>Estado Actual (RF-19)</th>
-                        </tr>
-                        <tr>
-                            <td>Lucia Fernandez</td>
-                            <td>Tomar Paracetamol c/8hrs por 3 días</td>
-                            <td><span class="badge moderado">Notificaciones Activas (App/Web)</span></td>
-                            <td><span style="color:#10b981;">✔️ Evolución Positiva (Reportado ayer)</span></td>
-                        </tr>
-                        <tr>
-                            <td>Manuel Rojas Paredes</td>
-                            <td>Reposo Absoluto, Chequeo cardiológico 15 días</td>
-                            <td><span class="badge leve">Agendada Próxima Cita (RF-17)</span></td>
-                            <td><span style="color:#ef4444;">⚠️ No reporta señales (Alerta Médica RF-20)</span></td>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th>Paciente Titular</th>
+                                <th>Plan Autogenerado Resumen</th>
+                                <th>Acciones Automatizadas del Sistema (IoT/Recordatorios)</th>
+                                <th>Feedback Reportado / Estado Evolución</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight:500;">Lucia Fernandez</td>
+                                <td>Tomar Paracetamol c/8hrs (3 días)</td>
+                                <td><span class="badge moderado"><i data-lucide="smartphone" width="12"></i> Notificaciones Dispositivo Móvil enviadas</span></td>
+                                <td><span style="color:var(--success); display:flex; gap:6px; align-items:center;"><i data-lucide="thumbs-up" width="16"></i> Evolución Positiva Registrada por ella</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:500;">Manuel Rojas</td>
+                                <td>Reposo Absoluto Post-quirúrgico, dieta especial.</td>
+                                <td><span class="badge leve"><i data-lucide="calendar" width="12"></i> Cita de Control Autogenerada (RF-17)</span></td>
+                                <td><span style="color:var(--danger); display:flex; gap:6px; align-items:center;"><i data-lucide="shield-alert" width="16"></i> Ninguna lectura ni confirmación en 48hs. (Alertar Unidad)</span></td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- VISTA: GESTIÓN DE TURNOS (Stakeholder: Jefe de Turno) -->
+            <!-- VISTA: GESTIÓN DE TURNOS / BURNOUT -->
             <div id="view-turnos" class="view-section">
-                <h2 class="section-header">Centro de Mitigación de Burnout Mód. Turnos (RF-21 a RF-25)</h2>
-                <p class="section-desc">Aquí el Jefe de Turno monitorea en tiempo real todo el peso laboral sobre los hombros del equipo médico.</p>
+                <h2 class="section-header">Análisis de Estrés Laboral y Reasignación en Caliente</h2>
+                <p class="section-desc">Panel de Jefe de Turno (Supervisión Estricta). Aquí se detecta, gracias a cruces estadísticos de rendimiento, cuando un actor sufre exceso de labor (burnout) en tiempo real respecto a sus colegas. (RF-21, 23 y 24)</p>
 
                 <div class="grid-2">
-                    <div class="card">
-                        <h3>Dra. Elena Ruiz (Medicina General)</h3>
-                        <div style="font-size: 0.9em; color:var(--text-muted); margin-bottom: 10px;">
-                            RF-21: Pacientes Atendidos: 12 | En cola: 5
+                    <div class="card" style="border-left: 4px solid var(--danger);">
+                        <h3 style="margin:0 0 16px 0; font-weight:600; display:flex; justify-content:space-between;">
+                            Dra. Elena Ruiz (Internista)
+                            <span class="badge critico">Riesgo Alto</span>
+                        </h3>
+                        <div style="font-size: 0.9rem; margin-bottom: 20px; display:flex; gap:24px;">
+                            <div><span style="color:var(--text-muted); display:block;">Atendidos:</span> <b style="font-size:1.1rem;">12</b></div>
+                            <div><span style="color:var(--text-muted); display:block;">Pila en Espera:</span> <b style="font-size:1.1rem; color:var(--danger)">5 pac.</b></div>
                         </div>
-                        <div style="background: rgba(255,255,255,0.05); height: 10px; border-radius: 5px; margin-bottom: 5px;">
-                            <div style="background: #ef4444; width: 95%; height: 100%; border-radius: 5px;"></div>
+                        <div style="background: var(--border-clr); height: 8px; border-radius: 4px; margin-bottom: 8px; overflow:hidden;">
+                            <div style="background: var(--danger); width: 92%; height: 100%; border-radius: 4px; transition: width 0.4s;"></div>
                         </div>
-                        <p style="color:#ef4444; font-weight:600; font-size:0.9rem;">Índice Carga (RF-22): 95% - BURNOUT INMINENTE</p>
-                        <button class="btn btn-outline" style="border-color:#ef4444; color:#ef4444;" onclick="Swal.fire('Gestión Inteligente', 'Distribuyendo 4 pacientes de la Dra. Elena hacia el Dr. Pedro (RF-24).', 'info')">Reasignar Pacientes Rápidamente</button>
+                        <p style="color:var(--danger); font-weight:600; font-size:0.9rem; margin:0 0 20px 0;">Algoritmo Detecta 92% Estrés Laboral (Carga Altamente Sensible)</p>
+                        <button class="btn btn-outline" style="width:100%; border-color:var(--danger); color:var(--danger);" onclick="Swal.fire('Gestión Redistributiva Efectuada', 'Ejecutada reasignación de pacientes desde Dra Elena hacia bloque libre del Dr. Alva (Protocolo de Balance de Trabajo).', 'info')">
+                            <i data-lucide="refresh-cw" width="16"></i> Redistribuir Pacientes Equitativamente
+                        </button>
                     </div>
 
-                    <div class="card">
-                        <h3>Dr. Pedro Alva (Guardia Externa)</h3>
-                        <div style="font-size: 0.9em; color:var(--text-muted); margin-bottom: 10px;">
-                            RF-21: Pacientes Atendidos: 4 | En cola: 0
+                    <div class="card" style="border-left: 4px solid var(--success);">
+                        <h3 style="margin:0 0 16px 0; font-weight:600; display:flex; justify-content:space-between;">
+                            Dr. Pedro Alva (Traumatología)
+                            <span class="badge leve">Favorable</span>
+                        </h3>
+                        <div style="font-size: 0.9rem; margin-bottom: 20px; display:flex; gap:24px;">
+                            <div><span style="color:var(--text-muted); display:block;">Atendidos:</span> <b style="font-size:1.1rem;">4</b></div>
+                            <div><span style="color:var(--text-muted); display:block;">Pila en Espera:</span> <b style="font-size:1.1rem; color:var(--success)">0 pac.</b></div>
                         </div>
-                        <div style="background: rgba(255,255,255,0.05); height: 10px; border-radius: 5px; margin-bottom: 5px;">
-                            <div style="background: #10b981; width: 25%; height: 100%; border-radius: 5px;"></div>
+                        <div style="background: var(--border-clr); height: 8px; border-radius: 4px; margin-bottom: 8px; overflow:hidden;">
+                            <div style="background: var(--success); width: 25%; height: 100%; border-radius: 4px; transition: width 0.4s;"></div>
                         </div>
-                        <p style="color:#10b981; font-weight:600; font-size:0.9rem;">Índice Carga (RF-22): 25% - Disponible</p>
-                        <button class="btn btn-outline" disabled style="opacity: 0.3;">Recursos Balanceados</button>
+                        <p style="color:var(--success); font-weight:600; font-size:0.9rem; margin:0 0 20px 0;">Carga en Niveles Saludables (25%)</p>
+                        <button class="btn" disabled style="width:100%; background:var(--border-clr); color:var(--text-muted);">
+                            <i data-lucide="check" width="16"></i> Optimizado
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- VISTA: ADMINISTRACIÓN (Stakeholder: Admin/Director) -->
+            <!-- VISTA: CONFIGURACIÓN Y ADMINISTRACIÓN -->
             <div id="view-admin" class="view-section">
-                <h2 class="section-header">Panel Global del Sistema (RF-26 a RF-29)</h2>
+                <h2 class="section-header">Panel Maestro de Control del Sistema Integrado (Admin)</h2>
                 
                 <div class="grid-2">
                     <div class="card">
-                        <h3>Auditoría y Roles (RF-26, RF-27)</h3>
-                        <p style="color:var(--text-muted);">Registro inmutable de seguridad lógica.</p>
-                        <table style="font-size: 0.85rem;">
-                            <tr><td>[10:42 AM] - admin alteró stock Eccográfo (RF-27)</td></tr>
-                            <tr><td style="color:#ef4444">[10:15 AM] - Intento Acceso Fallido IP 192.168.x</td></tr>
-                            <tr><td>[09:00 AM] - Dr. Pedro inició sesión exitosa.</td></tr>
-                        </table>
-                        <button class="btn btn-primary" style="margin-top:15px; width:100%;">Gestionar Cuentas Empleados (RF-26)</button>
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom: 20px;">
+                            <div style="padding:10px; background:var(--bg-sidebar); border-radius:12px; border: 1px solid var(--border-clr)"><i data-lucide="shield"></i></div>
+                            <h3 style="margin:0; font-weight:600;">Monitor de Seguridad y Logs Logológicos</h3>
+                        </div>
+                        <div style="font-family: 'Fira Code', monospace; font-size: 0.85rem; background:rgba(0,0,0,0.2); padding:16px; border-radius:8px; line-height:1.6; color:var(--text-muted);">
+                            <div style="color: #cbd5e1;">[04/01/26 10:42 📌] SuperAdmin > Alteración manual de stock de Equipos Bioclínicos completada.</div>
+                            <div style="color: var(--danger);">[04/01/26 10:15 ⛔] Falla de Intento Login - Hash Inválido (Origen IP Externa).</div>
+                            <div style="color: #cbd5e1;">[04/01/26 09:00 📌] System > Inicialización del bloque Spring-Boot Servidor local satisfactorio.</div>
+                        </div>
+                        <button class="btn btn-outline" style="margin-top:20px; width:100%;"><i data-lucide="users-cog" width="18"></i> Gestión de Credenciales IAM (Empleados)</button>
                     </div>
 
                     <div class="card">
-                        <h3>Reportes Gerenciales y Reglas (RF-28, RF-29)</h3>
-                        <p style="color:var(--text-muted);">Decisiones estratégicas para la junta médica.</p>
-                        <button class="btn btn-outline" style="width:100%; margin-bottom:10px;" onclick="Swal.fire('Exportando', 'Generando Consolidado PDF de eficiencia de atención.', 'success')">📄 Descargar Reporte Exportable PDF (RF-28)</button>
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom: 20px;">
+                            <div style="padding:10px; background:var(--bg-sidebar); border-radius:12px; border: 1px solid var(--border-clr)"><i data-lucide="file-down"></i></div>
+                            <h3 style="margin:0; font-weight:600;">Reportes y Ajuste de Algoritmos</h3>
+                        </div>
+                        <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">Extrae sábanas de datos estadísticos limpios para la toma de decisiones presupuestales avaladas por métricas exactas del sistema.</p>
                         
-                        <label style="font-size:0.9rem; margin-top:20px; display:block;">Ajustar Umbral Analítico de Fiebre Pre-Triaje (RF-29)</label>
-                        <input type="number" step="0.1" value="38.5" style="width:80px; display:inline-block;"> Centígrados.
+                        <button class="btn btn-primary" style="width:100%; margin-bottom:24px;" onclick="Swal.fire({title: 'Procesando Exportación', text: 'Convirtiendo métricas de asistencia hospitalaria en Formato Reporte Ejecutivo PDF (RF-28)...', icon:'info', timer:2500, showConfirmButton:false})">
+                            <i data-lucide="download" width="18"></i> Extraer Balance Estratégico (PDF)
+                        </button>
+                        
+                        <div style="border-top:1px solid var(--border-clr); padding-top:24px;">
+                            <label style="font-weight:600; font-size:0.9rem; display:flex; align-items:center; gap:8px;">
+                                <i data-lucide="sliders" width="16"></i> Calibrar Termómetro de Derivación Triaje (RF-29):
+                            </label>
+                            <div style="display:flex; gap:12px; align-items:center; margin-top:12px;">
+                                <input type="number" step="0.1" value="38.5" style="width:100px; margin:0;" class="form-control">
+                                <span style="font-family:'Fira Code', monospace; color:var(--text-muted);">°Centígrados para marcar Alerta Ámbar</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -358,12 +506,43 @@
         </div>
     </div>
 
-    <!-- SCRIPT TABS NAV -->
+    <!-- SCRIPT TABS NAV & LUCIDE ICONS INIT -->
     <script>
+        // Init theme
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        const themeBtn = document.getElementById('themeToggleBtn');
+        if(savedTheme === 'dark') {
+            themeBtn.innerHTML = '<i data-lucide="sun" width="20"></i> Modo Claro';
+        } else {
+            themeBtn.innerHTML = '<i data-lucide="moon" width="20"></i> Modo Oscuro';
+        }
+
+        // Inicializar SVG Icons
+        lucide.createIcons();
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', target);
+            localStorage.setItem('theme', target);
+            
+            const btn = document.getElementById('themeToggleBtn');
+            if(target === 'dark') {
+                btn.innerHTML = '<i data-lucide="sun" width="20"></i> Modo Claro';
+            } else {
+                btn.innerHTML = '<i data-lucide="moon" width="20"></i> Modo Oscuro';
+            }
+            lucide.createIcons();
+        }
+
         function switchTab(tabId, element) {
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
+            
+            // Reemplazar título, respetando diseño pro
             document.getElementById('view-title').innerText = element.innerText;
+            
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById('view-' + tabId).classList.add('active');
         }

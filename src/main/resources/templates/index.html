@@ -4,192 +4,197 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SynchroMed - Portal de Pacientes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- TIPOGRAFÍA PROFESIONAL: Fira Sans y Fira Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <!-- ICONOS SVG LUCIDE -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
-            --primary: #00d2ff;
-            --secondary: #3a7bd5;
-            --bg-dark: #0f172a;
-            --glass-bg: rgba(255, 255, 255, 0.05);
+            /* Tema Claro por defecto */
+            --bg-base: #F8FAFC;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+            --primary: #3B82F6;
+            --secondary: #60A5FA;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-card: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --modal-bg: #FFFFFF;
+        }
+
+        /* TEMA OSCURO (Por atributo data-theme) */
+        [data-theme="dark"] {
+            --bg-base: #0F172A;
+            --text-dark: #F8FAFC;
+            --text-muted: #94A3B8;
+            --primary: #3B82F6;
+            --secondary: #60A5FA;
+            --glass-bg: rgba(30, 41, 59, 0.5);
+            --glass-card: rgba(30, 41, 59, 0.8);
             --glass-border: rgba(255, 255, 255, 0.1);
+            --modal-bg: #1E293B;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg-dark);
-            background-image: radial-gradient(circle at top right, #1e3a8a 0%, var(--bg-dark) 50%);
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            margin: 0; padding: 0; font-family: 'Fira Sans', sans-serif;
+            background-color: var(--bg-base); color: var(--text-dark);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .glass-container {
-            width: 90%;
-            max-width: 800px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            padding: 40px;
-            position: relative;
-            z-index: 10;
+            width: 90%; max-width: 800px;
+            background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            padding: 48px; position: relative; z-index: 10;
         }
 
         h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 5px;
+            font-size: 3rem; font-weight: 800; margin-bottom: 8px; margin-top: 0;
             background: -webkit-linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: flex; align-items: center; gap: 16px;
         }
 
         .subtitle {
-            font-weight: 300;
-            font-size: 1.2rem;
-            color: #94a3b8;
-            margin-bottom: 40px;
+            font-weight: 400; font-size: 1.15rem; color: var(--text-muted); margin-bottom: 40px;
         }
 
         .grid-dashboard {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-            margin-bottom: 20px;
+            display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px;
         }
 
         .module-card {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 30px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            text-align: center;
+            background: var(--glass-card); border: 1px solid var(--glass-border); border-radius: 16px;
+            padding: 32px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
+            text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
         }
 
         .module-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: var(--primary);
-            box-shadow: 0 10px 30px -10px rgba(0, 210, 255, 0.3);
-            background: rgba(30, 58, 138, 0.2);
+            transform: translateY(-4px); border-color: var(--primary);
+            box-shadow: 0 12px 24px rgba(59, 130, 246, 0.1);
         }
 
-        .module-icon { font-size: 3.5rem; margin-bottom: 16px; }
-        .module-title { font-size: 1.8rem; font-weight: 600; margin-bottom: 10px; color: #f8fafc; }
-        .module-desc { font-size: 1rem; color: #cbd5e1; line-height: 1.5; padding: 0 20px;}
+        .module-icon { color: var(--primary); margin-bottom: 20px; display: inline-block; }
+        .module-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 12px; color: var(--text-dark); }
+        .module-desc { font-size: 1rem; color: var(--text-muted); line-height: 1.6; }
 
         /* Abstract shapes */
         .shape { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 1; }
-        .shape-1 { width: 400px; height: 400px; background: rgba(58, 123, 213, 0.3); top: -100px; left: -100px; }
-        .shape-2 { width: 500px; height: 500px; background: rgba(0, 210, 255, 0.2); bottom: -150px; right: -150px; }
+        .shape-1 { width: 400px; height: 400px; background: rgba(59, 130, 246, 0.2); top: -100px; left: -100px; }
+        .shape-2 { width: 500px; height: 500px; background: rgba(96, 165, 250, 0.15); bottom: -150px; right: -150px; }
 
         /* MODALES */
         .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 100; left: 0; top: 0; width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.6); 
-            backdrop-filter: blur(5px);
+            display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
         }
         .modal-content {
-            background: var(--bg-dark);
-            margin: 5% auto;
-            padding: 30px;
-            border: 1px solid var(--glass-border);
-            width: 90%;
-            max-width: 500px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            background: var(--modal-bg); margin: 5% auto; padding: 40px; border: 1px solid var(--glass-border);
+            width: 90%; max-width: 500px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            position: relative;
         }
         .close {
-            color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;
+            position: absolute; top: 24px; right: 24px; color: var(--text-muted); font-size: 24px;
+            cursor: pointer; transition: 0.2s;
         }
-        .close:hover { color: #fff; }
+        .close:hover { color: var(--primary); }
 
+        .form-label { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 8px;}
         input, textarea {
-            width: 100%; box-sizing: border-box; padding: 12px; margin-top: 8px; margin-bottom: 20px;
-            border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: #fff;
-            font-family: inherit; font-size: 1rem;
+            width: 100%; box-sizing: border-box; padding: 14px 16px; margin-bottom: 24px;
+            border-radius: 12px; border: 1px solid var(--glass-border); 
+            background: transparent; color: var(--text-dark);
+            font-family: inherit; font-size: 1rem; transition: border-color 0.2s;
         }
+        input:focus, textarea:focus { outline:none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         
-        input[type="date"] {
-            color-scheme: dark;
-        }
-
         button.btn-submit {
             background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: white; border: none; padding: 14px 20px; width: 100%; border-radius: 8px;
-            font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+            color: #fff; border: none; padding: 16px 20px; width: 100%; border-radius: 12px;
+            font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        button.btn-submit:hover { opacity: 0.9; box-shadow: 0 0 15px rgba(0, 210, 255, 0.5); }
-        .form-label { font-size: 0.9rem; color: #94a3b8; font-weight: 600; }
+        button.btn-submit:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
+        button.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .footer-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 1.05rem;
-            color: #64748b;
+            text-align: center; margin-top: 32px; font-size: 1rem; color: var(--text-muted);
+            display: flex; flex-direction: column; gap: 16px; align-items: center;
         }
         .footer-link a { color: var(--primary); text-decoration: none; cursor: pointer; font-weight: 600;}
         .footer-link a:hover { text-decoration: underline; }
-        
-        /* Ajuste de SweetAlert */
+
+        .theme-toggle {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 8px 16px; border-radius: 99px; background: var(--glass-card); border: 1px solid var(--glass-border);
+            color: var(--text-muted); cursor: pointer; font-size: 0.9rem; font-weight: 500; font-family: inherit; transition: 0.2s;
+        }
+        .theme-toggle:hover { color: var(--primary); border-color: var(--primary); }
+
         .swal2-html-container { margin: 1em 0; }
     </style>
 </head>
 <body>
 
+    <!-- Globos Decorativos -->
     <div class="shape shape-1"></div>
     <div class="shape shape-2"></div>
 
     <div class="glass-container">
-        
-        <h1 th:text="*{tituloPlataforma}">SynchroMed</h1>
-        <div class="subtitle">Portal de Pacientes - Autogestión de Salud</div>
+        <!-- CABECERA -->
+        <h1>
+            <i data-lucide="activity" width="40" height="40" style="color:var(--primary);"></i>
+            <span th:text="*{tituloPlataforma}">SynchroMed Pro</span>
+        </h1>
+        <div class="subtitle">Portal Inteligente de Pre-Admisión y Triaje</div>
 
+        <!-- MÓDULO ÚNICO DE CLIENTE -->
         <div class="grid-dashboard">
-            <!-- Tarjeta 1: Agenda (Única visible para el cliente) -->
             <div class="module-card" onclick="openModal('modal-agenda')">
-                <div class="module-icon">📅</div>
-                <div class="module-title">Agenda Médica</div>
-                <div class="module-desc">Ingrese sus síntomas. Nuestro asistente detectará qué especialidad requiere y pre-registrará su cita.</div>
+                <div class="module-icon"><i data-lucide="calendar-plus" width="48" height="48"></i></div>
+                <div class="module-title">Evaluar y Agendar Consulta</div>
+                <div class="module-desc">Ingrese su información. Nuestro sistema clínico analizará sus síntomas para derivación automática a la especialidad requerida.</div>
             </div>
         </div>
 
+        <!-- FOOTER & CONTROLES -->
         <div class="footer-link">
-            ¿Eres personal de salud? <a onclick="openModal('modal-login')">Acceder al Portal del Hospital</a>
+            <div>
+                ¿Personal Operativo? <a onclick="openModal('modal-login')">Acceder al Portal del Hospital</a>
+            </div>
+            
+            <button class="theme-toggle" id="themeToggleBtnPortal" onclick="toggleThemePortal()">
+                <i data-lucide="moon" width="16"></i> Modo Oscuro
+            </button>
         </div>
     </div>
 
     <!-- Modal AGENDA (Cliente) -->
     <div id="modal-agenda" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('modal-agenda')">&times;</span>
-            <h2 style="margin-top:0">Reservar Cita / Consulta</h2>
+            <div class="close" onclick="closeModal('modal-agenda')"><i data-lucide="x"></i></div>
+            <h2 style="margin-top:0; color:var(--text-dark); margin-bottom: 24px; font-weight:600;">Ingreso Triage Digital</h2>
+            
             <form id="frmAgenda" onsubmit="submitFormularioCliente(event)">
                 <label class="form-label">Nombres y Apellidos:</label>
                 <input type="text" name="nombres" required placeholder="Ej: Luis Garcia">
 
-                <label class="form-label">DNI:</label>
+                <label class="form-label">Documento de Identidad (DNI):</label>
                 <input type="text" name="dni" required placeholder="12345678" maxlength="8" pattern="\d{8}" title="Debe contener 8 dígitos">
 
                 <label class="form-label">Fecha de Nacimiento:</label>
                 <input type="date" name="fechaNacimiento" required>
 
-                <label class="form-label">Detalle sus Síntomas Principales:</label>
-                <textarea name="sintomas" rows="3" required placeholder="Siento dolor en el hueso..."></textarea>
+                <label class="form-label">Describa detalladamente sus síntomas:</label>
+                <textarea name="sintomas" rows="3" required placeholder="Siento un dolor punzante en el pecho y me falta la respiración..."></textarea>
 
-                <button type="submit" class="btn-submit">Enviar Solicitud a SynchroMed</button>
+                <button type="submit" class="btn-submit">
+                    <i data-lucide="send"></i> Enviar Solicitud a Evaluación
+                </button>
             </form>
         </div>
     </div>
@@ -197,35 +202,67 @@
     <!-- Modal LOGIN (Personal Salud) -->
     <div id="modal-login" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('modal-login')">&times;</span>
-            <h2 style="margin-top:0; color:var(--primary)">Acceso - SynchroMed</h2>
+            <div class="close" onclick="closeModal('modal-login')"><i data-lucide="x"></i></div>
+            <h2 style="margin-top:0; color:var(--primary); font-weight:600; display:flex; gap:10px; align-items:center;">
+                <i data-lucide="shield-check"></i> Acceso Intranet
+            </h2>
+            <div style="color:var(--text-muted); margin-bottom:24px; font-size:0.95rem;">Autenticación para Personal Médico y Administrativo.</div>
+            
             <form id="frmLogin" onsubmit="submitLogin(event)">
-                <label class="form-label">Usuario:</label>
-                <input type="text" name="username" required placeholder="Ej: admin">
+                <label class="form-label">Identificador (Usuario):</label>
+                <input type="text" name="username" required placeholder="admin">
 
-                <label class="form-label">Contraseña:</label>
+                <label class="form-label">Clave de Seguridad:</label>
                 <input type="password" name="password" required placeholder="••••••••">
 
-                <button type="submit" class="btn-submit">Ingresar al Sistema</button>
+                <button type="submit" class="btn-submit">
+                    <i data-lucide="log-in"></i> Verificar Identidad
+                </button>
             </form>
         </div>
     </div>
 
     <script>
-        function openModal(id) { document.getElementById(id).style.display = 'block'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        // INIT LUCIDE
+        lucide.createIcons();
 
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = "none";
-            }
+        // INIT THEME
+        const portalTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', portalTheme);
+        updateThemeToggleBtn(portalTheme);
+
+        function toggleThemePortal() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', target);
+            localStorage.setItem('theme', target);
+            updateThemeToggleBtn(target);
         }
 
+        function updateThemeToggleBtn(theme) {
+            const btn = document.getElementById('themeToggleBtnPortal');
+            if(theme === 'dark') {
+                btn.innerHTML = '<i data-lucide="sun" width="16"></i> Cambiar a Claro';
+            } else {
+                btn.innerHTML = '<i data-lucide="moon" width="16"></i> Cambiar a Oscuro';
+            }
+            lucide.createIcons();
+        }
+
+        // FUNCIONES MODALES
+        function openModal(id) { document.getElementById(id).style.display = 'block'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) { event.target.style.display = "none"; }
+        }
+
+        // SUBMIT PACIENTE
         async function submitFormularioCliente(e) {
             e.preventDefault();
             const btn = e.target.querySelector('button');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = 'Evaluando Síntomas...';
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="spin" width="18"></i> Evaluando NLP...';
+            lucide.createIcons();
             btn.disabled = true;
 
             try {
@@ -234,35 +271,33 @@
                 const htmlText = await response.text();
                 
                 let iconType = 'info';
-                
-                // Efecto visual según gravedad de la inferencia del bot
                 if (htmlText.includes('EMERGENCIA')) { iconType = 'error'; } 
                 else if (htmlText.includes('TRAUMATOLOGÍA') || htmlText.includes('INFECTOLOGÍA')) { iconType = 'warning'; }
 
+                const styleTarget = document.documentElement.getAttribute('data-theme') === 'dark' ? {bg:'#1e293b', clr:'#f8fafc'} : {bg:'#fff', clr:'#1e293b'};
+
                 Swal.fire({
-                    title: 'Resultado del Agente:',
-                    html: htmlText, // Usamos renderizado HTML ordenado
+                    title: 'Derivación Exitosa',
+                    html: htmlText,
                     icon: iconType,
-                    background: '#1e293b', 
-                    color: '#fff',
-                    confirmButtonColor: '#3b82f6',
-                    width: '500px'
+                    background: styleTarget.bg, color: styleTarget.clr,
+                    confirmButtonColor: '#3b82f6', width: '500px'
                 });
-                
-                closeModal('modal-agenda');
-                e.target.reset();
+                closeModal('modal-agenda'); e.target.reset();
             } catch (error) {
                 Swal.fire('Error', 'No se pudo contactar al servidor', 'error');
             } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                btn.innerHTML = originalHTML; btn.disabled = false; lucide.createIcons();
             }
         }
 
+        // SUBMIT LOGIN HOSPITAL
         async function submitLogin(e) {
             e.preventDefault();
             const btn = e.target.querySelector('button');
-            btn.innerHTML = 'Verificando Hash...';
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="spin" width="18"></i> Validando SHA-256...';
+            lucide.createIcons();
             btn.disabled = true;
 
             try {
@@ -270,30 +305,34 @@
                 const response = await fetch('/api/hospital/login', { method: 'POST', body: params });
                 const text = await response.text();
                 
+                const styleTarget = document.documentElement.getAttribute('data-theme') === 'dark' ? {bg:'#1e293b', clr:'#f8fafc'} : {bg:'#fff', clr:'#1e293b'};
+
                 if (response.ok && text === "BIENVENIDO") {
                     Swal.fire({
-                        title: 'Acceso Autorizado',
-                        text: 'Hash SHA-256 válido. Redirigiendo al dashboard del hospital...',
+                        title: 'Autenticación Exitosa',
+                        text: 'Credenciales Validadas Seguramente. Accediendo...',
                         icon: 'success',
-                        background: '#1e293b', color: '#fff', showConfirmButton: false, timer: 1500
+                        background: styleTarget.bg, color: styleTarget.clr, showConfirmButton: false, timer: 1500
                     }).then(() => {
                         window.location.href = '/hospital/dashboard';
                     });
                 } else {
                     Swal.fire({
-                        title: 'Acceso Denegado',
-                        text: text,
-                        icon: 'error',
-                        background: '#1e293b', color: '#fff'
+                        title: 'Acceso Restringido',
+                        text: text, icon: 'error',
+                        background: styleTarget.bg, color: styleTarget.clr
                     });
                 }
             } catch (error) {
-                Swal.fire('Error', 'No se pudo contactar al servidor de autenticación', 'error');
+                Swal.fire('Error de Red', 'No se pudo conectar al endpoint seguro.', 'error');
             } finally {
-                btn.innerHTML = 'Ingresar al Sistema';
-                btn.disabled = false;
+                btn.innerHTML = originalHTML; btn.disabled = false; lucide.createIcons();
             }
         }
     </script>
+    <style>
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
 </body>
 </html>
