@@ -12,6 +12,13 @@ public class Paciente {
         this.dni = dni;
     }
 
+    public Paciente(int idPaciente, String nombre, String dni, String estado) {
+        this.idPaciente = idPaciente;
+        this.nombre = nombre;
+        this.dni = dni;
+        // La BBDD pide un INT, podemos parsear a futuro según el string recibido.
+    }
+
     public int getIdPaciente() { return idPaciente; }
     public String getNombre() { return nombre; }
     public String getDni() { return dni; }
