@@ -38,3 +38,23 @@ CREATE TABLE Citas (
     FOREIGN KEY (id_paciente) REFERENCES Pacientes(id_paciente),
     FOREIGN KEY (id_personal) REFERENCES PersonalSalud(id_personal)
 );
+
+-- Tabla de Triaje: Clasificación de urgencia para evitar el "efecto embudo"
+CREATE TABLE Triaje (
+    id_triaje INT PRIMARY KEY AUTO_INCREMENT,
+    id_paciente INT,
+    frecuencia_cardiaca INT,
+    temperatura DECIMAL(4,2),
+    sintomas_principales TEXT,
+    nivel_prioridad ENUM('Rojo', 'Naranja', 'Amarillo', 'Verde', 'Azul') NOT NULL,
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_paciente) REFERENCES Pacientes(id_paciente)
+) ENGINE=InnoDB;
+
+-- Auditoría: Consideración de seguridad (Semana 6)
+CREATE TABLE LogsAcceso (
+    id_log INT PRIMARY KEY AUTO_INCREMENT,
+    usuario_id INT,
+    accion VARCHAR(100),
+    fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP
+);
